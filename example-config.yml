@@ -1,0 +1,10 @@
+---
+# List of Sidekiq metric collectors to run
+collectors:
+  # "app" and "env" are used to populate Prometheus metric labels
+- app: myapp
+  env: stage
+  redis-uri: redis://myapp.redis.stage:6379/2
+- app: myapp
+  env: production
+  redis-uri: redis://myapp.redis.production:6379/2
