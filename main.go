@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"io/ioutil"
 	"net/http"
 
@@ -13,7 +14,10 @@ import (
 )
 
 func main() {
-	y, err := ioutil.ReadFile("./config.yml")
+	var config = flag.String("config", "./config.yml", "Path to config file (default: ./config.yml)")
+	flag.Parse()
+
+	y, err := ioutil.ReadFile(*config)
 	if err != nil {
 		logrus.Fatal(err)
 	}
