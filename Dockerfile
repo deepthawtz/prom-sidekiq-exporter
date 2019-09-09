@@ -5,4 +5,4 @@ RUN apk add --update ca-certificates
 COPY prom-sidekiq-exporter /app/prom-sidekiq-exporter
 
 WORKDIR /app
-CMD ["prom-sidekiq-exporter"]
+ENTRYPOINT ["prom-sidekiq-exporter"]
