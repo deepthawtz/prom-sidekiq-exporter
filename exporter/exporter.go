@@ -75,14 +75,7 @@ func NewExporter(config *Config) (*Exporter, error) {
 			}
 			coll.QueueCounters = map[string]*prometheus.Desc{}
 			for _, q := range queues {
-				parts := strings.Split(q, ":")
-				var queue string
-				if len(parts) == 2 {
-					queue = parts[1]
-				} else {
-					queue = parts[0]
-				}
-				coll.QueueCounters[queue] = prometheus.NewDesc(
+				coll.QueueCounters[q] = prometheus.NewDesc(
 					"sidekiq_queue_count",
 					"length of important sidekiq queues",
 					[]string{"app", "env", "queue"}, nil,
@@ -114,8 +107,15 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 	for _, c := range e.Collectors {
 		for k, q := range c.QueueCounters {
+			parts := strings.Split(k, ":")
+			var queue string
+			if len(parts) == 2 {
+				queue = parts[1]
+			} else {
+				queue = parts[0]
+			}
 			var val float64
-			if k == "dead" {
+			if queue == "dead" {
 				cmd := c.RedisClient.ZCard(k)
 				if err := cmd.Err(); err != nil {
 					logrus.Error(err)
@@ -128,7 +128,7 @@ func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
 				}
 				val = float64(cmd.Val())
 			}
-			ch <- prometheus.MustNewConstMetric(q, prometheus.GaugeValue, val, c.App, c.Env, k)
+			ch <- prometheus.MustNewConstMetric(q, prometheus.GaugeValue, val, c.App, c.Env, queue)
 		}
 	}
 }
