@@ -1,0 +1,29 @@
+project_name: prom-sidekiq-exporter
+release:
+  github:
+    owner: deepthawtz
+    name: prom-sidekiq-exporter
+  name_template: '{{.Tag}}'
+builds:
+- goos:
+  - linux
+  - darwin
+  goarch:
+  - amd64
+  main: .
+  binary: prom-sidekiq-exporter
+  env:
+    - CGO_ENABLED=0
+dockers:
+  - image_templates:
+      - "quay.io/betterdoctor/prom-sidekiq-exporter:{{ .Tag }}"
+    dockerfile: Dockerfile
+    goos: linux
+    goarch: amd64
+    binaries:
+      - prom-sidekiq-exporter
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: false
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
